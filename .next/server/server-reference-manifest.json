@@ -1,0 +1,14 @@
+{
+  "node": {
+    "343722d1029028fdcf668f1798731fe2885183fb": {
+      "workers": {
+        "app/reservar/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5Cerick%5C%5CCarWash%20Alan%5C%5Csrc%5C%5Capp%5C%5Cagendar%5C%5Cactions.ts%22%2C%5B%22createAppointment%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/reservar/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "869VnO9fUIoqRGfOZgg3n/KkTonL8xGRKZZoTMBL/98="
+}
