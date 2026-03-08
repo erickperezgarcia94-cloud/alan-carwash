@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/utils/supabase/client'; // REVISA SI ESTA RUTA ES CORRECTA EN TU PROYECTO
+import { createClient } from '@/lib/supabase/client'; // REVISA SI ESTA RUTA ES CORRECTA EN TU PROYECTO
 import { useRouter } from 'next/navigation';
 
 export default function AdminPage() {
