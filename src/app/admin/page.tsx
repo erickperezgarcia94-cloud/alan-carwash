@@ -10,34 +10,28 @@ export default function AdminPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  // Función para cargar citas
   const fetchAppointments = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('appointments')
       .select('*')
       .order('appointment_at', { ascending: false });
-
     if (data) setAppointments(data);
   };
 
   useEffect(() => {
     const checkUserAndFetch = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-
       if (!user || user.email !== 'erickperezgarcia94@gmail.com') {
         router.push('/');
         return;
       }
-
       setIsAdmin(true);
       await fetchAppointments();
       setLoading(false);
     };
-
     checkUserAndFetch();
   }, [router, supabase]);
 
-  // FUNCIÓN PARA MARCAR COMO COMPLETADO
   const handleComplete = async (id: string) => {
     const { error } = await supabase
       .from('appointments')
@@ -45,88 +39,70 @@ export default function AdminPage() {
       .eq('id', id);
 
     if (!error) {
-      // Actualizamos la lista localmente para que se vea el cambio al instante
       setAppointments(appointments.map(apt => 
         apt.id === id ? { ...apt, status: 'completed' } : apt
       ));
     }
   };
 
-  // FUNCIÓN PARA CERRAR SESIÓN
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
-    router.refresh();
-  };
-
-  if (loading) return <div className="p-10 text-center font-sans">Verificando credenciales de Alan Carwash...</div>;
+  if (loading) return <div className="p-10 text-center font-sans">Cargando panel de Alan Carwash...</div>;
   if (!isAdmin) return null;
 
   return (
     <div className="p-4 md:p-8 bg-gray-100 min-h-screen font-sans text-gray-900">
       <div className="max-w-6xl mx-auto">
-        <header className="flex flex-col md:flex-row justify-between items-center mb-8 bg-blue-900 p-6 rounded-2xl text-white shadow-lg gap-4">
-          <div>
-            <h1 className="text-2xl font-bold">📋 Panel de Citas - Alan Carwash</h1>
-            <p className="text-blue-200 text-sm">Administrador: erickperezgarcia94@gmail.com</p>
-          </div>
-          <button 
-            onClick={handleSignOut}
-            className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-md"
-          >
-            Cerrar Sesión
-          </button>
+        {/* HEADER LIMPIO SIN BOTÓN DE CERRAR SESIÓN (USARÁS EL DE LA NAVBAR) */}
+        <header className="mb-8 bg-blue-900 p-8 rounded-2xl text-white shadow-lg border-b-4 border-blue-500 text-center md:text-left">
+          <h1 className="text-3xl font-extrabold tracking-tight">📋 Panel de Citas</h1>
+          <p className="text-blue-200 mt-2 font-medium">Bienvenido de nuevo, Erick</p>
         </header>
 
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {appointments.length === 0 ? (
-            <div className="bg-white p-10 text-center rounded-xl shadow-sm text-gray-500">
-              No hay citas registradas aún.
+            <div className="bg-white p-12 text-center rounded-2xl shadow-sm text-gray-400 border-2 border-dashed border-gray-200">
+              No hay citas registradas en este momento.
             </div>
           ) : (
             appointments.map((apt) => (
-              <div key={apt.id} className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:shadow-md">
+              <div key={apt.id} className="bg-white p-6 rounded-2xl shadow-sm border-l-8 border-blue-600 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all hover:shadow-md">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg text-gray-800">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="font-bold text-xl text-gray-800">
                       {apt.vehicle_brand} {apt.vehicle_model}
                     </h3>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${apt.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${apt.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                       {apt.status || 'Pendiente'}
                     </span>
                   </div>
-                  <p className="text-gray-600 text-sm mb-1">
-                    Placa: <span className="font-mono bg-gray-100 px-2 rounded font-bold">{apt.vehicle_plate}</span>
+                  <p className="text-gray-500 text-sm flex items-center gap-2">
+                    <span className="bg-gray-100 px-2 py-1 rounded font-mono font-bold text-gray-700">{apt.vehicle_plate}</span>
+                    • {apt.client_email}
                   </p>
-                  <p className="text-blue-600 font-semibold text-sm">
-                    📅 {new Date(apt.appointment_at).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}
+                  <p className="text-blue-600 font-bold mt-3 text-lg">
+                    {new Date(apt.appointment_at).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-2 w-full md:w-auto">
-                  {/* BOTÓN WHATSAPP (RECORDATORIO) */}
+                <div className="flex gap-3 w-full md:w-auto">
                   <a
-                    href={`https://wa.me/${apt.client_phone || ''}?text=${encodeURIComponent(
-                      `Hola! Soy Alan de Alan Carwash. Te confirmo tu cita para tu ${apt.vehicle_brand} hoy a las ${new Date(apt.appointment_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. Te esperamos!`
-                    )}`}
+                    href={`https://wa.me/${apt.client_phone || ''}?text=${encodeURIComponent(`Hola! Soy Alan de Alan Carwash. Te confirmo tu cita para tu ${apt.vehicle_brand} hoy a las ${new Date(apt.appointment_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}. Te esperamos!`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 md:flex-none bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors text-center"
+                    className="flex-1 md:flex-none bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-sm text-center"
                   >
-                    📱 Recordar
+                    WhatsApp
                   </a>
 
-                  {/* BOTÓN COMPLETAR */}
                   {apt.status !== 'completed' ? (
                     <button
                       onClick={() => handleComplete(apt.id)}
-                      className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm"
+                      className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-sm"
                     >
-                      ✅ Terminado
+                      Completar
                     </button>
                   ) : (
-                    <div className="flex-1 md:flex-none bg-gray-100 text-gray-400 px-4 py-2 rounded-lg text-sm font-bold text-center border border-gray-200">
-                      ✨ Lavado
+                    <div className="flex-1 md:flex-none bg-gray-50 text-gray-400 px-6 py-3 rounded-xl text-sm font-bold text-center border border-gray-100 italic">
+                      Lustrado
                     </div>
                   )}
                 </div>
