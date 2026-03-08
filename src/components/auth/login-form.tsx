@@ -62,9 +62,15 @@ export function LoginForm() {
       );
       return;
     }
-    router.push(redirectTo);
+    if (email === 'erickperezgarcia94@gmail.com') {
+      router.push('/admin');
+    } else {
+      router.push(redirectTo);
+    }
+    
     router.refresh();
   };
+  
 
   return (
     <Card className="w-full max-w-md border-gray-200 shadow-sm">
