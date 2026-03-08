@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import WhatsappButton from '@/components/WhatsappButton';
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <Header />
         {children}
+        <WhatsappButton />
       </body>
     </html>
   );
