@@ -44,24 +44,33 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-8 bg-blue-900 p-6 rounded-2xl text-white shadow-lg">
           <h1 className="text-2xl font-bold">📋 Panel de Citas - Alan Carwash</h1>
-          <span className="bg-blue-700 px-4 py-2 rounded-full text-sm">Admin: {erickperezgarcia94@gmail.com}</span>
+          {/* ¡AQUÍ ESTABA EL ERROR! El correo debe ir entre comillas o ser una variable */}
+          <span className="bg-blue-700 px-4 py-2 rounded-full text-sm">
+            Admin: {'erickperezgarcia94@gmail.com'}
+          </span>
         </header>
 
         <div className="grid gap-4">
           {appointments.length === 0 ? (
-            <p className="text-center text-gray-500 py-10">No hay citas registradas aún.</p>
+            <div className="bg-white p-10 text-center rounded-xl shadow-sm text-gray-500">
+              No hay citas registradas aún.
+            </div>
           ) : (
             appointments.map((apt) => (
               <div key={apt.id} className="bg-white p-5 rounded-xl shadow-sm border-l-4 border-blue-500 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                  <h3 className="font-bold text-lg text-gray-800">{apt.vehicle_brand} {apt.vehicle_model}</h3>
-                  <p className="text-gray-600 text-sm">Placa: <span className="font-mono bg-gray-100 px-2 rounded">{apt.vehicle_plate}</span></p>
+                  <h3 className="font-bold text-lg text-gray-800">
+                    {apt.vehicle_brand} {apt.vehicle_model}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    Placa: <span className="font-mono bg-gray-100 px-2 rounded">{apt.vehicle_plate}</span>
+                  </p>
                   <p className="text-blue-600 font-medium mt-1">
                     📅 {new Date(apt.appointment_at).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${apt.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                <div className="flex gap-2 text-gray-700">
+                   <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase border border-blue-200">
                     {apt.status || 'Pendiente'}
                   </span>
                 </div>
